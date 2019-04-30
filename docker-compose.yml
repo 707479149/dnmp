@@ -18,7 +18,7 @@ services:
 
   php:
     #build: ./php/php72/
-    image: php_self:v7
+    image: php_self:v8
     container_name: dnmp-php
     expose:
       - "9000"
@@ -30,6 +30,23 @@ services:
      # - ./php/init.sh:/var/www/init.sh:rw
       - ./php/hosts:/var/www/hosts:rw
     #entrypoint: /bin/bash
+
+  redis:
+    image: redis:latest
+    container_name: dnmp-redis
+    #networks:
+       #- net-redis
+    ports:
+      - "6379:6379"
+
+  memcached:
+    image: memcached:latest
+    container_name: dnmp-memcached
+   # networks:
+   #   - net-memcached
+    ports:
+      - "11211:11211"
+
 
 
     #command: /var/www/init.sh
@@ -60,8 +77,8 @@ services:
  # redis:
  #   image: redis:latest
  #   container_name: dnmp-redis
-#    networks:
-#      - net-redis
+ #    networks:
+ #      - net-redis
  #   ports:
  #     - "6379:6379"
 

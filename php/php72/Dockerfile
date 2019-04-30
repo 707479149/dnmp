@@ -13,6 +13,11 @@ COPY ./sources.list.stretch /etc/apt/sources.list
 # 4. xml, xmlrpc, wddx require libxml2-dev and libxslt-dev.
 # 5. Line `&& :\` is just for better reading and do nothing.
 RUN apt-get update \
+    && apt-get install -y vim zip unzip\
+    # 安装网络工具 使用ping命令
+    && apt-get install -y inetutils-ping \
+    # 安装转换工具 win文件转linux
+    && apt-get install -y dos2unix \
     && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install gd \
@@ -23,7 +28,7 @@ RUN apt-get update \
     && apt-get install -y libxml2-dev \
     && apt-get install -y libxslt-dev \
     && docker-php-ext-install soap \
-    && docker-php-ext-install swoole \
+    #&& docker-php-ext-install swoole \
     && docker-php-ext-install xsl \
     && docker-php-ext-install xmlrpc \
     && docker-php-ext-install wddx \
@@ -45,7 +50,7 @@ RUN apt-get update \
     && docker-php-ext-install sysvmsg \
     && docker-php-ext-install sysvsem \
     && docker-php-ext-install sysvshm \
-   #&& docker-php-ext-install xdebug \
+    #&& docker-php-ext-install xdebug \
     && docker-php-ext-install opcache \
     #&& docker-php-ext-install pdo_firebird \
     #&& docker-php-ext-install pdo_dblib \
@@ -108,5 +113,23 @@ RUN cd /tmp/ \
     && tar -xf xdebug-2.6.0.tgz \
     && rm xdebug-2.6.0.tgz \
     && ( cd xdebug-2.6.0 && phpize && ./configure && make && make install ) \
-    && rm -r xdebug-2.6.0 \
+    && rm -rf xdebug-2.6.0 \
     && docker-php-ext-enable xdebug
+
+# 安装swoole扩展
+COPY ./swoole-src-swoole-1.8.5-stable.tar.gz /tmp/ 
+RUN cd /tmp/ \
+    && tar -xzvf swoole-src-swoole-1.8.5-stable.tar.gz \
+    && rm swoole-src-swoole-1.8.5-stable.tar.gz \
+    && ( cd swoole-src-swoole-1.8.5-stable && phpize && ./configure && make && make install) \
+    && rm -rf swoole-src-swoole-1.8.5-stable \
+    && docker-php-ext-enable swoole  
+
+# 安装memcache扩展
+COPY ./pecl-memcache-php7.zip /tmp/ 
+RUN cd /tmp/ \
+    && unzip pecl-memcache-php7.zip \
+    && rm pecl-memcache-php7.zip \
+    && ( cd pecl-memcache-php7 && phpize && ./configure && make && make install) \
+    && rm -rf pecl-memcache-php7 \
+    && docker-php-ext-enable memcache    
